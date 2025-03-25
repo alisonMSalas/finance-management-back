@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="1" author="Freddy">
+        <createTable tableName="user">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="account">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance" type="DECIMAL(10,2)" defaultValueNumeric="0.00"/>
+            <column name="user_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk_account_user" references="user(id)" />
+            </column>
+        </createTable>
+
+        <createTable tableName="category">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="transaction">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="amount" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="description" type="TEXT"/>
+            <column name="account_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk_transaction_account" references="account(id)" />
+            </column>
+            <column name="category_id" type="INT">
+                <constraints foreignKeyName="fk_transaction_category" references="category(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="budget">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="max_amount" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk_budget_user" references="user(id)" />
+            </column>
+            <column name="category_id" type="INT">
+                <constraints foreignKeyName="fk_budget_category" references="category(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="savings_goal">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="target_amount" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="current_balance" type="DECIMAL(10,2)" defaultValueNumeric="0.00"/>
+            <column name="deadline" type="DATE"/>
+            <column name="user_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk_savings_goal_user" references="user(id)" />
+            </column>
+        </createTable>
+
+        <createTable tableName="automation">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="frequency" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk_automation_user" references="user(id)" />
+            </column>
+            <column name="account_id" type="INT">
+                <constraints foreignKeyName="fk_automation_account" references="account(id)"/>
+            </column>
+            <column name="category_id" type="INT">
+                <constraints foreignKeyName="fk_automation_category" references="category(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="investment">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="initial_amount" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="return_rate" type="DECIMAL(5,2)"/>
+            <column name="start_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk_investment_user" references="user(id)" />
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
