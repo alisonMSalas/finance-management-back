@@ -1,4 +1,4 @@
 package uta.ec.finance_manager.service;
 
-public interface CategoryService {
+public interface BudgetService {
 }
