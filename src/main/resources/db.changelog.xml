@@ -40,6 +40,15 @@
             </column>
         </createTable>
 
+        <createTable tableName="category">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
         <createTable tableName="transaction">
             <column name="id" type="SERIAL">
                 <constraints primaryKey="true" nullable="false"/>
@@ -56,8 +65,9 @@
             <column name="account_id" type="INT">
                 <constraints nullable="false" foreignKeyName="fk_transaction_account" references="account(id)" />
             </column>
-            <column name="category" type="VARCHAR(50)"/>
-
+            <column name="category_id" type="INT">
+                <constraints foreignKeyName="fk_transaction_category" references="category(id)"/>
+            </column>
         </createTable>
 
         <createTable tableName="budget">
@@ -77,8 +87,9 @@
             <column name="user_id" type="INT">
                 <constraints nullable="false" foreignKeyName="fk_budget_user" references="user(id)" />
             </column>
-            <column name="category" type="VARCHAR(50)"/>
-
+            <column name="category_id" type="INT">
+                <constraints foreignKeyName="fk_budget_category" references="category(id)"/>
+            </column>
         </createTable>
 
         <createTable tableName="savings_goal">
@@ -118,8 +129,9 @@
             <column name="account_id" type="INT">
                 <constraints foreignKeyName="fk_automation_account" references="account(id)"/>
             </column>
-            <column name="category" type="VARCHAR(50)" />
-
+            <column name="category_id" type="INT">
+                <constraints foreignKeyName="fk_automation_category" references="category(id)"/>
+            </column>
         </createTable>
 
         <createTable tableName="investment">
@@ -143,5 +155,9 @@
                 <constraints nullable="false" foreignKeyName="fk_investment_user" references="user(id)" />
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Rafael">
+        <renameTable oldTableName="user" newTableName="users"/>
     </changeSet>
 </databaseChangeLog>

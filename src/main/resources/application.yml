@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/finance
+    url: jdbc:postgresql://localhost:5432/finance
     username: postgres
-    password: root
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: none

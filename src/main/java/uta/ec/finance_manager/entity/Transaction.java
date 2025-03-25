@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uta.ec.finance_manager.Enum.Category;
+import uta.ec.finance_manager.enums.Category;
 
 import java.util.Date;
 
