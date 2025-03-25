@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/finance
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: true
+    drop-first: false
+    change-log: classpath:db.changelog.xml
+    default-schema: public
