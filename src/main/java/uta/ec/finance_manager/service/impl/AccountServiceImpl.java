@@ -11,6 +11,9 @@ import uta.ec.finance_manager.repository.AccountRepository;
 import uta.ec.finance_manager.repository.UserRepository;
 import uta.ec.finance_manager.service.AccountService;
 
+import java.util.Collection;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -20,14 +23,18 @@ public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     @Override
     public AccountDto createAccount(AccountDto accountDto) {
-
-
         return accountToDto(this.accountRepository.save(dtoToAccount(accountDto)));
+    }
+
+    @Override
+    public List<AccountDto> getUserAccounts(Integer userId) {
+        List<Account> list = this.accountRepository.findByUserId(userId);
+        return list.stream().map(this::accountToDto).toList();
     }
 
     private Account dtoToAccount(AccountDto accountDto){
         Account account = this.modelMapper.map(accountDto, Account.class);
-        account.setUser(this.userRepository.findById(accountDto.getId()).orElseThrow( () ->
+        account.setUser(this.userRepository.findById(accountDto.getUserId()).orElseThrow( () ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Not User Found")));
         return account;
     }
