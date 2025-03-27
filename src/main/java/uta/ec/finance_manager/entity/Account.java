@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uta.ec.finance_manager.enums.AccountType;
 
 import java.util.List;
 
@@ -17,7 +18,9 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
     private Double balance;
 
     @ManyToOne
