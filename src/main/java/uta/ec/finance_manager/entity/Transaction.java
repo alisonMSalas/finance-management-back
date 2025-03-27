@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uta.ec.finance_manager.enums.Category;
+import uta.ec.finance_manager.enums.CategoryType;
 
 import java.util.Date;
 
@@ -23,7 +23,7 @@ public class Transaction {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private CategoryType categoryType;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)

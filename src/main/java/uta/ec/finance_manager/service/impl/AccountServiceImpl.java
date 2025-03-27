@@ -43,6 +43,13 @@ public class AccountServiceImpl implements AccountService {
         return accountToDto(this.accountRepository.save(account));
     }
 
+    @Override
+    public void delete(Integer accountId) {
+        Account account = this.accountRepository.findById(accountId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found Account"));
+        this.accountRepository.delete(account);
+    }
+
     private Account dtoToAccount(AccountDto accountDto){
         Account account = this.modelMapper.map(accountDto, Account.class);
         account.setUser(this.userRepository.findById(accountDto.getUserId()).orElseThrow( () ->
