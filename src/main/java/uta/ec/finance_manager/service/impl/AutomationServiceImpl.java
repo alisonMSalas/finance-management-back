@@ -59,7 +59,9 @@ public class AutomationServiceImpl implements AutomationService {
         automation.setUser(userRepository.findById(automationDto.getUserId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         ));
-        automation.setAccount(accountRepository.findById(automationDto.getAccountId()).orElse(null));
+        automation.setAccount(accountRepository.findById(automationDto.getAccountId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        ));
         return automation;
     }
 
