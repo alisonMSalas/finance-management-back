@@ -10,4 +10,6 @@ public interface AccountService {
     List<AccountDto> getUserAccounts(Integer userId);
 
     AccountDto editAccount(AccountDto accountDto);
+
+    void delete(Integer accountId);
 }

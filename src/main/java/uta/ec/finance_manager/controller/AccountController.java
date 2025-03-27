@@ -28,4 +28,9 @@ public class AccountController {
         return this.accountService.editAccount(accountDto);
     }
 
+    @DeleteMapping()
+    public void deleteAccount(@RequestParam Integer accountId){
+        this.accountService.delete(accountId);
+    }
+
 }
