@@ -23,5 +23,9 @@ public class AccountController {
         return this.accountService.getUserAccounts(userId);
     }
 
+    @PutMapping()
+    public AccountDto editAccount(@RequestBody AccountDto accountDto){
+        return this.accountService.editAccount(accountDto);
+    }
 
 }

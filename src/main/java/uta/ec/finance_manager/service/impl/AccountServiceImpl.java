@@ -32,6 +32,17 @@ public class AccountServiceImpl implements AccountService {
         return list.stream().map(this::accountToDto).toList();
     }
 
+    @Override
+    public AccountDto editAccount(AccountDto accountDto) {
+        Account account = this.accountRepository.findById(accountDto.getId()).orElseThrow( () ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found Account"));
+        if (!(accountDto.getName() == null)){account.setName(accountDto.getName());}
+        if (!(accountDto.getType() == null)){account.setType(accountDto.getType());}
+        if (!(accountDto.getBalance() == null)){account.setBalance(accountDto.getBalance());}
+
+        return accountToDto(this.accountRepository.save(account));
+    }
+
     private Account dtoToAccount(AccountDto accountDto){
         Account account = this.modelMapper.map(accountDto, Account.class);
         account.setUser(this.userRepository.findById(accountDto.getUserId()).orElseThrow( () ->

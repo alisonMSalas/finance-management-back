@@ -8,4 +8,6 @@ public interface AccountService {
     AccountDto createAccount(AccountDto accountDto);
 
     List<AccountDto> getUserAccounts(Integer userId);
+
+    AccountDto editAccount(AccountDto accountDto);
 }
