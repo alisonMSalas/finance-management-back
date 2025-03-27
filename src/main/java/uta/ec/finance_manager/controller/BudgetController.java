@@ -23,7 +23,7 @@ public class BudgetController {
     }
 
     @PutMapping
-    public BudgetDto update(@RequestParam BudgetDto budgetDto) {
+    public BudgetDto update(@RequestBody BudgetDto budgetDto) {
         return budgetService.update(budgetDto);
     }
 
