@@ -56,7 +56,9 @@ public class AutomationServiceImpl implements AutomationService {
 
     private Automation dtoToAutomation(AutomationDto automationDto){
         Automation automation = this.modelMapper.map(automationDto, Automation.class);
-        automation.setUser(userRepository.findById(automationDto.getUserId()).orElse(null));
+        automation.setUser(userRepository.findById(automationDto.getUserId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        ));
         automation.setAccount(accountRepository.findById(automationDto.getAccountId()).orElse(null));
         return automation;
     }
