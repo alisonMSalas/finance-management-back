@@ -23,7 +23,7 @@ public class Transaction {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private CategoryType categoryType;
+    private CategoryType category;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)

@@ -13,7 +13,7 @@ public class AutomationDto {
     private Double amount;
     private String frequency;
     private Date startDate;
-    private CategoryType categoryType;
+    private CategoryType category;
     private Integer userId;
     private Integer accountId;
 }

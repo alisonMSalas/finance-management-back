@@ -22,7 +22,7 @@ public class Budget {
     private Date endDate;
 
     @Enumerated(EnumType.STRING)
-    private CategoryType categoryType;
+    private CategoryType category;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
