@@ -11,3 +11,7 @@ spring:
     drop-first: false
     change-log: classpath:db.changelog.xml
     default-schema: public
+
+server:
+  error:
+    include-message: always

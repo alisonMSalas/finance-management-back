@@ -1,5 +1,6 @@
 package uta.ec.finance_manager.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uta.ec.finance_manager.dto.AutomationDto;
@@ -14,7 +15,7 @@ import java.util.List;
 public class AutomationController {
     private final AutomationService automationService;
     @PostMapping()
-    public AutomationDto createAutomation(@RequestBody AutomationDto automationDto){
+    public AutomationDto createAutomation(@Valid @RequestBody AutomationDto automationDto){
         return this.automationService.create(automationDto);
     }
 
@@ -24,7 +25,7 @@ public class AutomationController {
     }
 
     @PutMapping()
-    public AutomationDto modifyAutomation(@RequestBody AutomationDto automationDto){
+    public AutomationDto modifyAutomation(@Valid @RequestBody AutomationDto automationDto){
         return this.automationService.edit(automationDto);
     }
 
@@ -32,5 +33,4 @@ public class AutomationController {
     public void deleteAutomation(@RequestParam Integer automationId){
         this.automationService.delete(automationId);
     }
-
 }

@@ -1,5 +1,6 @@
 package uta.ec.finance_manager.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uta.ec.finance_manager.dto.BudgetDto;
@@ -13,7 +14,7 @@ public class BudgetController {
     private final BudgetService budgetService;
 
     @PostMapping
-    public BudgetDto save(@RequestBody BudgetDto budgetDto) {
+    public BudgetDto save(@Valid @RequestBody BudgetDto budgetDto) {
         return budgetService.save(budgetDto);
     }
 
@@ -23,7 +24,7 @@ public class BudgetController {
     }
 
     @PutMapping
-    public BudgetDto update(@RequestBody BudgetDto budgetDto) {
+    public BudgetDto update(@Valid @RequestBody BudgetDto budgetDto) {
         return budgetService.update(budgetDto);
     }
 

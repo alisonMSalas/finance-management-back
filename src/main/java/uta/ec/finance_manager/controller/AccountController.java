@@ -1,5 +1,6 @@
 package uta.ec.finance_manager.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uta.ec.finance_manager.dto.AccountDto;
@@ -11,24 +12,24 @@ import java.util.List;
 @RequestMapping("/account")
 @RequiredArgsConstructor
 public class AccountController {
-
     private final AccountService accountService;
-    @PostMapping()
-    public AccountDto createAccount(@RequestBody AccountDto accountDto){
+
+    @PostMapping
+    public AccountDto createAccount(@Valid @RequestBody AccountDto accountDto){
         return this.accountService.createAccount(accountDto);
     }
 
-    @GetMapping()
+    @GetMapping
     public List<AccountDto> getUserAccounts(@RequestParam Integer userId){
         return this.accountService.getUserAccounts(userId);
     }
 
-    @PutMapping()
-    public AccountDto editAccount(@RequestBody AccountDto accountDto){
+    @PutMapping
+    public AccountDto editAccount(@Valid @RequestBody AccountDto accountDto){
         return this.accountService.editAccount(accountDto);
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     public void deleteAccount(@RequestParam Integer accountId){
         this.accountService.delete(accountId);
     }
