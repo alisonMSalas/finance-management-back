@@ -53,7 +53,7 @@ public class BudgetServiceImpl implements BudgetService {
     private Budget dtoToBudget(BudgetDto budgetDto) {
         Budget budget = modelMapper.map(budgetDto, Budget.class);
         budget.setUser(userRepository.findById(budgetDto.getUserId()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el usuario")
         ));
 
         return budget;

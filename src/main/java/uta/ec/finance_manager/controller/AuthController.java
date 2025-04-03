@@ -1,5 +1,6 @@
 package uta.ec.finance_manager.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,17 +29,15 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public UserDto registerUser(@RequestBody SaveUserDto request) {
+    public UserDto registerUser(@Valid @RequestBody SaveUserDto request) {
         request.setPassword(passwordEncoder.encode(request.getPassword()));
-
         User user = modelMapper.map(request, User.class);
-
 
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public String loginUser(@Valid @RequestBody AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
         );
@@ -46,10 +45,5 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
 
         return jwtUtil.generateToken(userDetails);
-    }
-
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello, World!";
     }
 }

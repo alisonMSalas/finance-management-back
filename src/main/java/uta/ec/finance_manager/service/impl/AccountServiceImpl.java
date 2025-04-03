@@ -35,7 +35,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto editAccount(AccountDto accountDto) {
         Account account = this.accountRepository.findById(accountDto.getId()).orElseThrow( () ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found Account"));
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
         if (!(accountDto.getName() == null)){account.setName(accountDto.getName());}
         if (!(accountDto.getType() == null)){account.setType(accountDto.getType());}
         if (!(accountDto.getBalance() == null)){account.setBalance(accountDto.getBalance());}
@@ -46,14 +46,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void delete(Integer accountId) {
         Account account = this.accountRepository.findById(accountId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found Account"));
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
         this.accountRepository.delete(account);
     }
 
     private Account dtoToAccount(AccountDto accountDto){
         Account account = this.modelMapper.map(accountDto, Account.class);
         account.setUser(this.userRepository.findById(accountDto.getUserId()).orElseThrow( () ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not User Found")));
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el usuario")));
         return account;
     }
 
