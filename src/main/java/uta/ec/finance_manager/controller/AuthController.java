@@ -31,15 +31,13 @@ public class AuthController {
     @PostMapping("/register")
     public UserDto registerUser(@Valid @RequestBody SaveUserDto request) {
         request.setPassword(passwordEncoder.encode(request.getPassword()));
-
         User user = modelMapper.map(request, User.class);
-
 
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
     @PostMapping("/login")
-    public String loginUser(@Valid @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public String loginUser(@Valid @RequestBody AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
         );
