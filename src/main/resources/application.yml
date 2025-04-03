@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-cvit4hggjchc73c001hg-a.virginia-postgres.render.com/financemanager_7sc9
-    username: uta
-    password: nQcEGw5iYlIa82ijyUaLh2U8dCiZAtvA
+    url: jdbc:postgresql://localhost:5432/finance
+    username: postgres
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: none
