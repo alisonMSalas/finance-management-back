@@ -36,7 +36,7 @@
             </column>
             <column name="balance" type="DECIMAL(10,2)" defaultValueNumeric="0.00"/>
             <column name="user_id" type="INT">
-                <constraints nullable="false" foreignKeyName="fk_account_user" references="user(id)" />
+                <constraints nullable="false" foreignKeyName="fk_account_user" references="user(id)"/>
             </column>
         </createTable>
 
@@ -54,7 +54,7 @@
             <column name="date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
             <column name="description" type="TEXT"/>
             <column name="account_id" type="INT">
-                <constraints nullable="false" foreignKeyName="fk_transaction_account" references="account(id)" />
+                <constraints nullable="false" foreignKeyName="fk_transaction_account" references="account(id)"/>
             </column>
             <column name="category" type="TEXT"/>
         </createTable>
@@ -74,7 +74,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="user_id" type="INT">
-                <constraints nullable="false" foreignKeyName="fk_budget_user" references="user(id)" />
+                <constraints nullable="false" foreignKeyName="fk_budget_user" references="user(id)"/>
             </column>
             <column name="category" type="TEXT"/>
         </createTable>
@@ -93,7 +93,7 @@
             <column name="current_balance" type="DECIMAL(10,2)" defaultValueNumeric="0.00"/>
             <column name="deadline" type="DATE"/>
             <column name="user_id" type="INT">
-                <constraints nullable="false" foreignKeyName="fk_savings_goal_user" references="user(id)" />
+                <constraints nullable="false" foreignKeyName="fk_savings_goal_user" references="user(id)"/>
             </column>
         </createTable>
 
@@ -111,7 +111,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="user_id" type="INT">
-                <constraints nullable="false" foreignKeyName="fk_automation_user" references="user(id)" />
+                <constraints nullable="false" foreignKeyName="fk_automation_user" references="user(id)"/>
             </column>
             <column name="account_id" type="INT">
                 <constraints foreignKeyName="fk_automation_account" references="account(id)"/>
@@ -137,7 +137,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="user_id" type="INT">
-                <constraints nullable="false" foreignKeyName="fk_investment_user" references="user(id)" />
+                <constraints nullable="false" foreignKeyName="fk_investment_user" references="user(id)"/>
             </column>
         </createTable>
     </changeSet>
@@ -146,5 +146,7 @@
         <renameTable oldTableName="user" newTableName="users"/>
     </changeSet>
 
-
+    <changeSet id="3" author="Rafael">
+        <addUniqueConstraint tableName="users" columnNames="email"/>
+    </changeSet>
 </databaseChangeLog>
