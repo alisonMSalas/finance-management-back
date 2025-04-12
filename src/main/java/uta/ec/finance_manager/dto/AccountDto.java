@@ -21,6 +21,5 @@ public class AccountDto {
     @NotNull(message = "El balance es obligatorio")
     private Double balance;
 
-    @NotNull(message = "El usuario es obligatorio")
     private Integer userId;
 }

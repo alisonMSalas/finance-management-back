@@ -3,13 +3,19 @@ package uta.ec.finance_manager.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uta.ec.finance_manager.dto.AccountDto;
 import uta.ec.finance_manager.entity.Account;
+import uta.ec.finance_manager.entity.User;
 import uta.ec.finance_manager.repository.AccountRepository;
 import uta.ec.finance_manager.repository.UserRepository;
 import uta.ec.finance_manager.service.AccountService;
+import uta.ec.finance_manager.util.JwtUtil;
+import uta.ec.finance_manager.util.UserUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,8 +27,14 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+    private final UserUtil userUtil;
+
     @Override
     public AccountDto createAccount(AccountDto accountDto) {
+        Integer userId = userUtil.getUserId();
+
+        accountDto.setUserId(userId);
+
         return accountToDto(this.accountRepository.save(dtoToAccount(accountDto)));
     }
 
@@ -34,11 +46,17 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto editAccount(AccountDto accountDto) {
-        Account account = this.accountRepository.findById(accountDto.getId()).orElseThrow( () ->
+        Account account = this.accountRepository.findById(accountDto.getId()).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
-        if (!(accountDto.getName() == null)){account.setName(accountDto.getName());}
-        if (!(accountDto.getType() == null)){account.setType(accountDto.getType());}
-        if (!(accountDto.getBalance() == null)){account.setBalance(accountDto.getBalance());}
+        if (!(accountDto.getName() == null)) {
+            account.setName(accountDto.getName());
+        }
+        if (!(accountDto.getType() == null)) {
+            account.setType(accountDto.getType());
+        }
+        if (!(accountDto.getBalance() == null)) {
+            account.setBalance(accountDto.getBalance());
+        }
 
         return accountToDto(this.accountRepository.save(account));
     }
@@ -50,14 +68,14 @@ public class AccountServiceImpl implements AccountService {
         this.accountRepository.delete(account);
     }
 
-    private Account dtoToAccount(AccountDto accountDto){
+    private Account dtoToAccount(AccountDto accountDto) {
         Account account = this.modelMapper.map(accountDto, Account.class);
-        account.setUser(this.userRepository.findById(accountDto.getUserId()).orElseThrow( () ->
+        account.setUser(this.userRepository.findById(accountDto.getUserId()).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el usuario")));
         return account;
     }
 
-    private AccountDto accountToDto(Account account){
+    private AccountDto accountToDto(Account account) {
         AccountDto accountDto = this.modelMapper.map(account, AccountDto.class);
         accountDto.setUserId(account.getId());
         return accountDto;
