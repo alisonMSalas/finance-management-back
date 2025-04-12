@@ -32,14 +32,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto createAccount(AccountDto accountDto) {
         Integer userId = userUtil.getUserId();
-
         accountDto.setUserId(userId);
-
         return accountToDto(this.accountRepository.save(dtoToAccount(accountDto)));
     }
 
     @Override
-    public List<AccountDto> getUserAccounts(Integer userId) {
+    public List<AccountDto> getUserAccounts() {
+        Integer userId = userUtil.getUserId();
         List<Account> list = this.accountRepository.findByUserId(userId);
         return list.stream().map(this::accountToDto).toList();
     }

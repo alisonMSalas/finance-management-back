@@ -7,7 +7,7 @@ import java.util.List;
 public interface AccountService {
     AccountDto createAccount(AccountDto accountDto);
 
-    List<AccountDto> getUserAccounts(Integer userId);
+    List<AccountDto> getUserAccounts();
 
     AccountDto editAccount(AccountDto accountDto);
 

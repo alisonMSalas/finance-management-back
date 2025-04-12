@@ -20,8 +20,8 @@ public class AccountController {
     }
 
     @GetMapping
-    public List<AccountDto> getUserAccounts(@RequestParam Integer userId){
-        return this.accountService.getUserAccounts(userId);
+    public List<AccountDto> getUserAccounts(){
+        return this.accountService.getUserAccounts();
     }
 
     @PutMapping
