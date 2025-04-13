@@ -2,6 +2,7 @@ package uta.ec.finance_manager.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,6 +12,8 @@ import uta.ec.finance_manager.repository.AccountRepository;
 import uta.ec.finance_manager.repository.TransactionRepository;
 import uta.ec.finance_manager.service.TransactionService;
 import uta.ec.finance_manager.util.UserUtil;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,12 @@ public class TransactionServiceImpl implements TransactionService {
 
         modelMapper.map(dto, transaction);
         return transactionToDto(transactionRepository.save(transaction));
+    }
+
+    @Override
+    public List<TransactionDto> getAllByUser() {
+        List<Transaction> transactions = transactionRepository.findAllByUserId(userUtil.getUserId(), Sort.by("id"));
+        return transactions.stream().map(this::transactionToDto).toList();
     }
 
     private TransactionDto transactionToDto(Transaction transaction) {

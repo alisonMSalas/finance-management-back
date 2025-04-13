@@ -1,6 +1,7 @@
 package uta.ec.finance_manager.controller;
 
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uta.ec.finance_manager.dto.AccountDto;
@@ -24,5 +25,10 @@ public class TransactionController {
     @PutMapping
     public TransactionDto editAccount(@RequestParam Integer transactionId, @Valid @RequestBody TransactionDto transactionDto) {
         return transactionService.edit(transactionId, transactionDto);
+    }
+
+    @GetMapping
+    public List<TransactionDto> getAllByUSer() {
+        return  transactionService.getAllByUser();
     }
 }
