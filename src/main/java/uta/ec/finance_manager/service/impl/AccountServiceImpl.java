@@ -2,6 +2,7 @@ package uta.ec.finance_manager.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,21 +40,25 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountDto> getUserAccounts() {
         Integer userId = userUtil.getUserId();
-        List<Account> list = this.accountRepository.findByUserId(userId);
+        List<Account> list = this.accountRepository.findByUserId(userId, Sort.by("id"));
         return list.stream().map(this::accountToDto).toList();
     }
 
     @Override
     public AccountDto editAccount(AccountDto accountDto) {
-        Account account = this.accountRepository.findById(accountDto.getId()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
-        if (!(accountDto.getName() == null)) {
+        Integer userId = userUtil.getUserId();
+
+        Account account = this.accountRepository.findOneByIdAndUserId(accountDto.getId(), userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
+
+        if (accountDto.getName() != null) {
             account.setName(accountDto.getName());
         }
-        if (!(accountDto.getType() == null)) {
+        if (accountDto.getType() != null) {
             account.setType(accountDto.getType());
         }
-        if (!(accountDto.getBalance() == null)) {
+        if (accountDto.getBalance() != null) {
             account.setBalance(accountDto.getBalance());
         }
 
