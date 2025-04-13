@@ -67,6 +67,12 @@ public class AccountServiceImpl implements AccountService {
         this.accountRepository.delete(account);
     }
 
+    @Override
+    public Double getTotalBalance() {
+        Integer userId = userUtil.getUserId();
+        return this.accountRepository.getTotalBalanceByUserId(userId);
+    }
+
     private Account dtoToAccount(AccountDto accountDto) {
         Account account = this.modelMapper.map(accountDto, Account.class);
         account.setUser(this.userRepository.findById(accountDto.getUserId()).orElseThrow(() ->

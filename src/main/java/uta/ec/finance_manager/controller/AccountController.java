@@ -34,4 +34,8 @@ public class AccountController {
         this.accountService.delete(accountId);
     }
 
+    @GetMapping("/total-balance")
+    public Double getTotalBalance() {
+        return accountService.getTotalBalance();
+    }
 }

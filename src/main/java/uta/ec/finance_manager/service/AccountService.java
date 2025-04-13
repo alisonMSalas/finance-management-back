@@ -12,4 +12,6 @@ public interface AccountService {
     AccountDto editAccount(AccountDto accountDto);
 
     void delete(Integer accountId);
+
+    Double getTotalBalance();
 }
