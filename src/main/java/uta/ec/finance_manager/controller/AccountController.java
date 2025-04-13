@@ -16,17 +16,17 @@ public class AccountController {
 
     @PostMapping
     public AccountDto createAccount(@Valid @RequestBody AccountDto accountDto){
-        return this.accountService.createAccount(accountDto);
+        return this.accountService.save(accountDto);
     }
 
     @GetMapping
     public List<AccountDto> getUserAccounts(){
-        return this.accountService.getUserAccounts();
+        return this.accountService.getAllByUser();
     }
 
     @PutMapping
     public AccountDto editAccount(@Valid @RequestBody AccountDto accountDto){
-        return this.accountService.editAccount(accountDto);
+        return this.accountService.edit(accountDto);
     }
 
     @DeleteMapping

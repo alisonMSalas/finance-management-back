@@ -149,4 +149,17 @@
     <changeSet id="3" author="Rafael">
         <addUniqueConstraint tableName="users" columnNames="email"/>
     </changeSet>
+
+    <changeSet id="4" author="Rafael">
+        <addColumn tableName="transaction">
+            <column type="INTEGER" name="user_id">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="transaction" baseColumnNames="user_id"
+                                 constraintName="fk_transaction_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>

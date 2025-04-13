@@ -5,11 +5,11 @@ import uta.ec.finance_manager.dto.AccountDto;
 import java.util.List;
 
 public interface AccountService {
-    AccountDto createAccount(AccountDto accountDto);
+    AccountDto save(AccountDto accountDto);
 
-    List<AccountDto> getUserAccounts();
+    List<AccountDto> getAllByUser();
 
-    AccountDto editAccount(AccountDto accountDto);
+    AccountDto edit(AccountDto accountDto);
 
     void delete(Integer accountId);
 

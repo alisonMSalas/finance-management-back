@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uta.ec.finance_manager.dto.AutomationDto;
-import uta.ec.finance_manager.entity.Automation;
 import uta.ec.finance_manager.service.AutomationService;
 
 import java.util.List;

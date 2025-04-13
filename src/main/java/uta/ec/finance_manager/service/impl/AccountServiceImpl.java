@@ -4,21 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uta.ec.finance_manager.dto.AccountDto;
 import uta.ec.finance_manager.entity.Account;
-import uta.ec.finance_manager.entity.User;
 import uta.ec.finance_manager.repository.AccountRepository;
 import uta.ec.finance_manager.repository.UserRepository;
 import uta.ec.finance_manager.service.AccountService;
-import uta.ec.finance_manager.util.JwtUtil;
 import uta.ec.finance_manager.util.UserUtil;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -31,43 +25,39 @@ public class AccountServiceImpl implements AccountService {
     private final UserUtil userUtil;
 
     @Override
-    public AccountDto createAccount(AccountDto accountDto) {
+    public AccountDto save(AccountDto accountDto) {
         Integer userId = userUtil.getUserId();
         accountDto.setUserId(userId);
         return accountToDto(this.accountRepository.save(dtoToAccount(accountDto)));
     }
 
     @Override
-    public List<AccountDto> getUserAccounts() {
+    public List<AccountDto> getAllByUser() {
         Integer userId = userUtil.getUserId();
         List<Account> list = this.accountRepository.findByUserId(userId, Sort.by("id"));
         return list.stream().map(this::accountToDto).toList();
     }
 
     @Override
-    public AccountDto editAccount(AccountDto accountDto) {
+    public AccountDto edit(AccountDto accountDto) {
         Integer userId = userUtil.getUserId();
 
         Account account = this.accountRepository.findOneByIdAndUserId(accountDto.getId(), userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
 
-        if (accountDto.getName() != null) {
-            account.setName(accountDto.getName());
-        }
-        if (accountDto.getType() != null) {
-            account.setType(accountDto.getType());
-        }
-        if (accountDto.getBalance() != null) {
-            account.setBalance(accountDto.getBalance());
-        }
+        account.setName(accountDto.getName());
+        account.setType(accountDto.getType());
+        account.setBalance(accountDto.getBalance());
 
         return accountToDto(this.accountRepository.save(account));
     }
 
     @Override
     public void delete(Integer accountId) {
-        Account account = this.accountRepository.findById(accountId).orElseThrow(() ->
+        Integer userId = userUtil.getUserId();
+
+        Account account = this.accountRepository.findOneByIdAndUserId(accountId, userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
         this.accountRepository.delete(account);
     }
