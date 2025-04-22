@@ -10,6 +10,7 @@ import uta.ec.finance_manager.dto.TransactionDto;
 import uta.ec.finance_manager.entity.Transaction;
 import uta.ec.finance_manager.repository.AccountRepository;
 import uta.ec.finance_manager.repository.TransactionRepository;
+import uta.ec.finance_manager.repository.UserRepository;
 import uta.ec.finance_manager.service.TransactionService;
 import uta.ec.finance_manager.util.UserUtil;
 
@@ -22,11 +23,29 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountRepository accountRepository;
     private final ModelMapper modelMapper;
     private final UserUtil userUtil;
+    private final UserRepository userRepository;
 
     @Override
     public TransactionDto save(TransactionDto dto) {
         Integer userId = userUtil.getUserId();
         Transaction transaction = dtoToTransaction(dto, userId);
+
+        Double currentBalance = transaction.getAccount().getBalance();
+
+        if (transaction.getType().equals("Gasto")) {
+            if (currentBalance < transaction.getAmount()) {
+                throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "La transacción excede el balance de la cuenta");
+            } else {
+
+            }
+            currentBalance -= transaction.getAmount();
+        } else if (transaction.getType().equals("Ingreso")) {
+            currentBalance += transaction.getAmount();
+        } else {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Tipo de transacción no válido");
+        }
+
+        transaction.getAccount().setBalance(currentBalance);
         return transactionToDto(transactionRepository.save(transaction));
     }
 
@@ -49,11 +68,14 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionDto transactionToDto(Transaction transaction) {
         TransactionDto transactionDto = modelMapper.map(transaction, TransactionDto.class);
         transactionDto.setAccountId(transaction.getAccount().getId());
+        transactionDto.setUserId(transactionDto.getUserId());
         return transactionDto;
     }
 
     private Transaction dtoToTransaction(TransactionDto dto, Integer userId) {
         Transaction transaction = modelMapper.map(dto, Transaction.class);
+        transaction.setUser(userRepository.findById(userId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el usuario")));
         transaction.setAccount(accountRepository.findOneByIdAndUserId(dto.getAccountId(), userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta")));
         return transaction;
