@@ -14,4 +14,6 @@ public interface AccountService {
     void delete(Integer accountId);
 
     Double getTotalBalance();
+
+    List<AccountDto> getAllByName(String name);
 }

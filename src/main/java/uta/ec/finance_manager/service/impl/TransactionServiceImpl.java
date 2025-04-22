@@ -36,10 +36,6 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = transactionRepository.findOneByIdAndUserId(transactionId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la transaccion"));
 
-        if (dto.getId() == null || !dto.getId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la transaccion");
-        }
-
         modelMapper.map(dto, transaction);
         return transactionToDto(transactionRepository.save(transaction));
     }

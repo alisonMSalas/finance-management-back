@@ -1,7 +1,5 @@
 package uta.ec.finance_manager.repository;
 
-
-import org.hibernate.boot.model.source.spi.Sortable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +16,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Double getTotalBalanceByUserId(@Param("userId") Integer userId);
 
     Optional<Account> findOneByIdAndUserId(Integer id, Integer userId);
+
+    List<Account> findAllByNameContainsAndUserId(String name, Integer userId);
 }

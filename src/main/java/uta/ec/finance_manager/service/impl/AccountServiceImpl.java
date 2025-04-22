@@ -28,13 +28,13 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto save(AccountDto accountDto) {
         Integer userId = userUtil.getUserId();
         accountDto.setUserId(userId);
-        return accountToDto(this.accountRepository.save(dtoToAccount(accountDto)));
+        return accountToDto(accountRepository.save(dtoToAccount(accountDto)));
     }
 
     @Override
     public List<AccountDto> getAllByUser() {
         Integer userId = userUtil.getUserId();
-        List<Account> list = this.accountRepository.findByUserId(userId, Sort.by("id"));
+        List<Account> list = accountRepository.findByUserId(userId, Sort.by("id"));
         return list.stream().map(this::accountToDto).toList();
     }
 
@@ -42,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto edit(AccountDto accountDto) {
         Integer userId = userUtil.getUserId();
 
-        Account account = this.accountRepository.findOneByIdAndUserId(accountDto.getId(), userId)
+        Account account = accountRepository.findOneByIdAndUserId(accountDto.getId(), userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
 
@@ -50,33 +50,40 @@ public class AccountServiceImpl implements AccountService {
         account.setType(accountDto.getType());
         account.setBalance(accountDto.getBalance());
 
-        return accountToDto(this.accountRepository.save(account));
+        return accountToDto(accountRepository.save(account));
     }
 
     @Override
     public void delete(Integer accountId) {
         Integer userId = userUtil.getUserId();
 
-        Account account = this.accountRepository.findOneByIdAndUserId(accountId, userId).orElseThrow(() ->
+        Account account = accountRepository.findOneByIdAndUserId(accountId, userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
-        this.accountRepository.delete(account);
+        accountRepository.delete(account);
     }
 
     @Override
     public Double getTotalBalance() {
         Integer userId = userUtil.getUserId();
-        return this.accountRepository.getTotalBalanceByUserId(userId);
+        return accountRepository.getTotalBalanceByUserId(userId);
+    }
+
+    @Override
+    public List<AccountDto> getAllByName(String name) {
+        Integer userId = userUtil.getUserId();
+        return accountRepository.findAllByNameContainsAndUserId(name, userId)
+                .stream().map(this::accountToDto).toList();
     }
 
     private Account dtoToAccount(AccountDto accountDto) {
-        Account account = this.modelMapper.map(accountDto, Account.class);
-        account.setUser(this.userRepository.findById(accountDto.getUserId()).orElseThrow(() ->
+        Account account = modelMapper.map(accountDto, Account.class);
+        account.setUser(userRepository.findById(accountDto.getUserId()).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el usuario")));
         return account;
     }
 
     private AccountDto accountToDto(Account account) {
-        AccountDto accountDto = this.modelMapper.map(account, AccountDto.class);
+        AccountDto accountDto = modelMapper.map(account, AccountDto.class);
         accountDto.setUserId(account.getId());
         return accountDto;
     }

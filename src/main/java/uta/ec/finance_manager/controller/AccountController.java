@@ -21,21 +21,26 @@ public class AccountController {
 
     @GetMapping
     public List<AccountDto> getUserAccounts(){
-        return this.accountService.getAllByUser();
+        return accountService.getAllByUser();
     }
 
     @PutMapping
     public AccountDto editAccount(@Valid @RequestBody AccountDto accountDto){
-        return this.accountService.edit(accountDto);
+        return accountService.edit(accountDto);
     }
 
     @DeleteMapping
     public void deleteAccount(@RequestParam Integer accountId){
-        this.accountService.delete(accountId);
+        accountService.delete(accountId);
     }
 
     @GetMapping("/total-balance")
     public Double getTotalBalance() {
         return accountService.getTotalBalance();
+    }
+
+    @GetMapping("/name")
+    public List<AccountDto> getAllByName(@PathVariable String name) {
+        return accountService.getAllByName(name);
     }
 }
