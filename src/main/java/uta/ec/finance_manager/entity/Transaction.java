@@ -25,7 +25,7 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private CategoryType category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
