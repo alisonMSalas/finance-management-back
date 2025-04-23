@@ -3,6 +3,7 @@ package uta.ec.finance_manager.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import uta.ec.finance_manager.enums.TransactionCategory;
 
 import java.util.Date;
 
@@ -18,6 +19,8 @@ public class TransactionDto {
     private Date date;
     @NotNull(message = "La cuenta es obligatoria")
     private Integer accountId;
+    @NotNull(message = "La categoria es obligatoria")
+    private TransactionCategory category;
     private Integer userId;
     private String description;
 }

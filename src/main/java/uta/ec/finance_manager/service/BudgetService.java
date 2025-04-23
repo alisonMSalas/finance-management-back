@@ -8,7 +8,7 @@ public interface BudgetService {
 
     BudgetDto save(BudgetDto budgetDto);
 
-    List<BudgetDto> getAllByUserId(Integer userId);
+    List<BudgetDto> getAll();
 
     BudgetDto update(BudgetDto budgetDto);
 

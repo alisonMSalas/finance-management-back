@@ -18,12 +18,12 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping
-    public TransactionDto createAccount(@Valid @RequestBody TransactionDto transactionDto) {
+    public TransactionDto save(@Valid @RequestBody TransactionDto transactionDto) {
         return transactionService.save(transactionDto);
     }
 
     @PutMapping
-    public TransactionDto editAccount(@RequestParam Integer transactionId, @Valid @RequestBody TransactionDto transactionDto) {
+    public TransactionDto edit(@RequestParam Integer transactionId, @Valid @RequestBody TransactionDto transactionDto) {
         return transactionService.edit(transactionId, transactionDto);
     }
 

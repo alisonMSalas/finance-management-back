@@ -84,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
 
     private AccountDto accountToDto(Account account) {
         AccountDto accountDto = modelMapper.map(account, AccountDto.class);
-        accountDto.setUserId(account.getId());
+        accountDto.setUserId(account.getUser().getId());
         return accountDto;
     }
 }
