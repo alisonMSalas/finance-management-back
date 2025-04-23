@@ -9,6 +9,7 @@ import uta.ec.finance_manager.service.BudgetService;
 import java.util.List;
 
 @RestController
+@RequestMapping("budget")
 @RequiredArgsConstructor
 public class BudgetController {
     private final BudgetService budgetService;
@@ -19,8 +20,8 @@ public class BudgetController {
     }
 
     @GetMapping
-    public List<BudgetDto> getAllByUserId(@RequestParam Integer userId) {
-        return budgetService.getAllByUserId(userId);
+    public List<BudgetDto> getAll() {
+        return budgetService.getAll();
     }
 
     @PutMapping
