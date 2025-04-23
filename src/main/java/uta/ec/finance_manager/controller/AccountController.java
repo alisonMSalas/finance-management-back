@@ -39,7 +39,7 @@ public class AccountController {
         return accountService.getTotalBalance();
     }
 
-    @GetMapping("/name")
+    @GetMapping("/name/{name}")
     public List<AccountDto> getAllByName(@PathVariable String name) {
         return accountService.getAllByName(name);
     }
