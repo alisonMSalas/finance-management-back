@@ -4,7 +4,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uta.ec.finance_manager.enums.CategoryType;
+import uta.ec.finance_manager.enums.TransactionCategory;
+import uta.ec.finance_manager.enums.BudgetPeriod;
 
 import java.util.Date;
 
@@ -16,16 +17,12 @@ public class BudgetDto {
 
     @NotNull(message = "El monto máximo es obligatorio")
     private Double maxAmount;
+    private Double currentAmount;
 
-    @NotNull(message = "La fecha de inicio es obligatoria")
-    private Date startDate;
-
-    @NotNull(message = "La fecha de fin es obligatoria")
-    private Date endDate;
+    @NotNull(message = "El periodo es obligatorio")
+    private BudgetPeriod period;
 
     @NotNull(message = "La categoría es obligatoria")
-    private CategoryType category;
-
-    @NotNull(message = "El usuario es obligatorio")
+    private TransactionCategory category;
     private Integer userId;
 }

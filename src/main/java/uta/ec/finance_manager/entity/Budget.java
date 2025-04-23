@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uta.ec.finance_manager.enums.CategoryType;
-
-import java.util.Date;
+import uta.ec.finance_manager.enums.TransactionCategory;
+import uta.ec.finance_manager.enums.BudgetPeriod;
 
 @Entity
 @Table(name = "budget")
@@ -18,11 +17,11 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Double maxAmount;
-    private Date startDate;
-    private Date endDate;
+    private BudgetPeriod period;
+    private Double currentAmount;
 
     @Enumerated(EnumType.STRING)
-    private CategoryType category;
+    private TransactionCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

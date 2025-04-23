@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import uta.ec.finance_manager.enums.CategoryType;
+import uta.ec.finance_manager.enums.TransactionCategory;
 
 import java.util.Date;
 
@@ -23,7 +23,7 @@ public class AutomationDto {
     private Date startDate;
 
     @NotNull(message = "La categoría es obligatoria")
-    private CategoryType category;
+    private TransactionCategory category;
 
     @NotNull(message = "El usuario es obligatorio")
     private Integer userId;

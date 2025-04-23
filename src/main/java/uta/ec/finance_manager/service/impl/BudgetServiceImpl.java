@@ -7,10 +7,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uta.ec.finance_manager.dto.BudgetDto;
 import uta.ec.finance_manager.entity.Budget;
+import uta.ec.finance_manager.enums.BudgetPeriod;
 import uta.ec.finance_manager.repository.BudgetRepository;
+import uta.ec.finance_manager.repository.TransactionRepository;
 import uta.ec.finance_manager.repository.UserRepository;
 import uta.ec.finance_manager.service.BudgetService;
+import uta.ec.finance_manager.util.DateUtil;
+import uta.ec.finance_manager.util.UserUtil;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,6 +24,9 @@ public class BudgetServiceImpl implements BudgetService {
     private final BudgetRepository budgetRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final TransactionRepository transactionRepository;
+    private final DateUtil dateUtil;
+    private final UserUtil userUtil;
 
     @Override
     public BudgetDto save(BudgetDto budgetDto) {
@@ -26,8 +34,30 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public List<BudgetDto> getAllByUserId(Integer userId) {
-        return budgetRepository.findAllByUserId(userId).stream().map(this::budgetToDto).toList();
+    public List<BudgetDto> getAll() {
+        return budgetRepository.findAllByUserId(userUtil.getUserId()).stream().map(budget -> {
+            Date start;
+            Date end;
+
+            if (budget.getPeriod().equals(BudgetPeriod.SEMANAL)) {
+                start = dateUtil.getStartOfWeek();
+                end = dateUtil.getEndOfWeek();
+            } else if (budget.getPeriod().equals(BudgetPeriod.MENSUAL)) {
+                start = dateUtil.getStartOfMonth();
+                end = dateUtil.getEndOfMonth();
+            } else {
+                start = dateUtil.getStartOfYear();
+                end = dateUtil.getEndOfYear();
+            }
+
+            budget.setCurrentAmount(transactionRepository
+                    .findAllByCategoryAndDateBetween(budget.getCategory(), start, end).stream()
+                    .mapToDouble(transaction -> transaction.getType().equals("Gasto") ? transaction.getAmount() : 0)
+                    .sum()
+            );
+
+            return budgetToDto(budget);
+        }).toList();
     }
 
     @Override
@@ -52,7 +82,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     private Budget dtoToBudget(BudgetDto budgetDto) {
         Budget budget = modelMapper.map(budgetDto, Budget.class);
-        budget.setUser(userRepository.findById(budgetDto.getUserId()).orElseThrow(
+        budget.setUser(userRepository.findById(userUtil.getUserId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el usuario")
         ));
 
