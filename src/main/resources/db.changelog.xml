@@ -126,7 +126,7 @@
             <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="initial_amount" type="DECIMAL(10,2)">
+                <column name="initial_amount" type="DECIMAL(10,2)">
                 <constraints nullable="false"/>
             </column>
             <column name="return_rate" type="DECIMAL(5,2)"/>
@@ -161,5 +161,14 @@
                                  constraintName="fk_transaction_users"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="5" author="Rafael">
+        <addColumn tableName="budget">
+            <column name="current_amount" type="DECIMAL(10,2)"/>
+            <column name="period" type="VARCHAR(25)"/>
+        </addColumn>
+        <dropColumn tableName="budget" columnName="start_date"/>
+        <dropColumn tableName="budget" columnName="end_date"/>
     </changeSet>
 </databaseChangeLog>
