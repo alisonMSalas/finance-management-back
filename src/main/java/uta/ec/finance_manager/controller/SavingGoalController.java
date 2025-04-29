@@ -9,7 +9,7 @@ import uta.ec.finance_manager.service.SavingGoalService;
 import java.util.List;
 
 @RestController
-@RequestMapping("saving")
+@RequestMapping("/saving")
 @RequiredArgsConstructor
 public class SavingGoalController
 {

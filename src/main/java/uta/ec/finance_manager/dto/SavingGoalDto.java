@@ -21,10 +21,10 @@ public class SavingGoalDto {
     @NotBlank(message = "El nombre es obligatorio")
     private String name;
 
-    @NotBlank(message = "La cantidad objetivo es obligatoria")
+    @NotNull(message = "La cantidad objetivo es obligatoria")
     private Double targetAmount;
 
-    @NotBlank(message = "El saldo actual es obligatorio")
+    @NotNull(message = "El saldo actual es obligatorio")
     private Double currentBalance;
 
     @NotNull(message = "La fecha límite es obligatoria")
