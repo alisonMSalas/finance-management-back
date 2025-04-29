@@ -188,4 +188,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="8" author="Freddy">
+        <addColumn tableName="automation">
+            <column name="name" type="VARCHAR(150)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

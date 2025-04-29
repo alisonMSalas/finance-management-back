@@ -14,6 +14,7 @@ import uta.ec.finance_manager.entity.User;
 import uta.ec.finance_manager.enums.Frequency;
 import uta.ec.finance_manager.repository.AccountRepository;
 import uta.ec.finance_manager.repository.AutomationRepository;
+import uta.ec.finance_manager.repository.UserRepository;
 import uta.ec.finance_manager.service.AutomationService;
 import uta.ec.finance_manager.util.UserUtil;
 
@@ -29,6 +30,7 @@ public class AutomationServiceImpl implements AutomationService {
     private final AutomationRepository automationRepository;
     private final ModelMapper modelMapper;
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
     private final UserUtil userUtil;
 
     @Override
@@ -53,7 +55,27 @@ public class AutomationServiceImpl implements AutomationService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Automation with ID " + automationDto.getId() + " not found"));
 
-        modelMapper.map(automationDto, automation);
+        // Mapeo manual para evitar problemas con ModelMapper
+        automation.setAmount(automationDto.getAmount());
+        automation.setFrequency(automationDto.getFrequency());
+        automation.setStartDate(automationDto.getStartDate());
+        automation.setCategory(automationDto.getCategory());
+        automation.setAccount(accountRepository.findById(automationDto.getAccountId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Account with ID " + automationDto.getAccountId() + " not found")));
+
+        // Preservar el User existente
+        if (automation.getUser() == null) {
+            Integer userId = userUtil.getUserId();
+            if (userId == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+            }
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "User with ID " + userId + " not found"));
+            automation.setUser(user);
+        }
+
         return automationToDto(automationRepository.save(automation));
     }
 
@@ -101,7 +123,6 @@ public class AutomationServiceImpl implements AutomationService {
                 try {
                     executeAutomation(automation);
                 } catch (Exception e) {
-                    // Log error (puedes usar un logger como SLF4J)
                     System.err.println("Failed to execute automation ID " + automation.getId() + ": " + e.getMessage());
                 }
             }
@@ -115,7 +136,7 @@ public class AutomationServiceImpl implements AutomationService {
                 : automation.getStartDate();
 
         if (lastExecution == null) {
-            return frequency == Frequency.DAILY; // Ejecuta si es diaria y es la primera vez
+            return frequency == Frequency.DAILY;
         }
 
         LocalDate lastExecutionDate = lastExecution.toInstant()
@@ -146,15 +167,15 @@ public class AutomationServiceImpl implements AutomationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start date is required");
         }
 
-
         Automation automation = modelMapper.map(automationDto, Automation.class);
         Integer userId = userUtil.getUserId();
         if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
 
-        User user = new User();
-        user.setId(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "User with ID " + userId + " not found"));
         automation.setUser(user);
 
         Account account = accountRepository.findById(automationDto.getAccountId())
