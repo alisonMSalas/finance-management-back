@@ -46,13 +46,28 @@ public class SavingGoalServiceImpl implements SavingGoalService {
 
     @Override
     public SavingGoalDto save(SavingGoalDto savingGoalDto) {
+        // Mapear el DTO a la entidad
         SavingGoal savingGoal = dtoToSaving(savingGoalDto);
+
+        // Validar que el targetAmount sea mayor a 0
         if (savingGoalDto.getTargetAmount() <= 0) {
             throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "El ahorro debe ser mayor");
         }
+
+        // Obtener el user_id del token usando UserUtil
+        int userId = userUtil.getUserId();
+
+        // Crear un objeto User y asignarlo al SavingGoal
+        User user = new User();
+        user.setId(userId);
+        savingGoal.setUser(user);
+
+        // Configurar los valores iniciales
         savingGoal.setCurrentStreak(0);
         savingGoal.setLastDepositDate(null);
         savingGoal.setGoalStatus(GoalStatus.ACTIVE);
+
+        // Guardar la meta en la base de datos
         SavingGoal saved = savingGoalRepository.save(savingGoal);
         return savingToDto(saved);
     }
