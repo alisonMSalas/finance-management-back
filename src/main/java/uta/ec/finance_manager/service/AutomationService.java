@@ -8,7 +8,7 @@ import java.util.List;
 public interface AutomationService {
     AutomationDto create(AutomationDto automationDto);
 
-    List<AutomationDto> getAutomationsByUser(Integer userId);
+    List<AutomationDto> getAutomationsByUser();
 
     AutomationDto edit(AutomationDto automationDto);
 
