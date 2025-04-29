@@ -1,9 +1,8 @@
 package uta.ec.finance_manager.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import uta.ec.finance_manager.enums.Frequency;
 import uta.ec.finance_manager.enums.TransactionCategory;
 
 import java.util.Date;
@@ -13,13 +12,17 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Automation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Double amount;
-    private String frequency;
+    @Enumerated(EnumType.STRING)
+    private Frequency frequency;
     private Date startDate;
+    private Date lastExecutionDate;
 
     @Enumerated(EnumType.STRING)
     private TransactionCategory category;

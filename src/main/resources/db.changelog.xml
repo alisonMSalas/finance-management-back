@@ -171,4 +171,21 @@
         <dropColumn tableName="budget" columnName="start_date"/>
         <dropColumn tableName="budget" columnName="end_date"/>
     </changeSet>
+
+    <changeSet id="6" author="Freddy">
+        <addColumn tableName="savings_goal">
+            <column name="last_deposit_date" type="DATE"/>
+            <column name="creation_date" type="DATE"/>
+            <column name="goal_status" type="VARCHAR(50)"/>
+            <column name="deposit_frequency" type="VARCHAR(50)"/>
+            <column name="current_streak" type="INTEGER" defaultValueNumeric="0"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="7" author="Freddy">
+        <addColumn tableName="automation">
+            <column name="last_execution_date" type="TIMESTAMP"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
