@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface TransactionService {
     TransactionDto save(TransactionDto dto);
+    TransactionDto save(TransactionDto dto, Integer userId);
     TransactionDto edit(Integer transactionId, TransactionDto dto);
     List<TransactionDto> getAllByUser();
 }

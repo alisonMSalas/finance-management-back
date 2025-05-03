@@ -1,8 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/FinanceManager
+    url: jdbc:postgresql://localhost:5433/finance
     username: postgres
-    password: 1234
+    password: root
+  jackson:
+    time-zone: America/Guayaquil
   jpa:
     hibernate:
       ddl-auto: none
