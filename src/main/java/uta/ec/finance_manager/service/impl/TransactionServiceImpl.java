@@ -1,5 +1,6 @@
 package uta.ec.finance_manager.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
@@ -25,9 +26,22 @@ public class TransactionServiceImpl implements TransactionService {
     private final UserUtil userUtil;
     private final UserRepository userRepository;
 
+    @Transactional
     @Override
     public TransactionDto save(TransactionDto dto) {
-        Integer userId = userUtil.getUserId();
+        Integer userId;
+        if (dto.getUserId() != null){
+            userId= dto.getUserId();
+        }else{
+            userId= userUtil.getUserId();
+        }
+
+        return save(dto, userId);
+    }
+
+    @Transactional
+    @Override
+    public TransactionDto save(TransactionDto dto, Integer userId) {
         Transaction transaction = dtoToTransaction(dto, userId);
 
         Double currentBalance = transaction.getAccount().getBalance();
@@ -35,8 +49,6 @@ public class TransactionServiceImpl implements TransactionService {
         if (transaction.getType().equals("Gasto")) {
             if (currentBalance < transaction.getAmount()) {
                 throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "La transacción excede el balance de la cuenta");
-            } else {
-
             }
             currentBalance -= transaction.getAmount();
         } else if (transaction.getType().equals("Ingreso")) {
@@ -68,7 +80,7 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionDto transactionToDto(Transaction transaction) {
         TransactionDto transactionDto = modelMapper.map(transaction, TransactionDto.class);
         transactionDto.setAccountId(transaction.getAccount().getId());
-        transactionDto.setUserId(transactionDto.getUserId());
+        transactionDto.setUserId(transaction.getUser().getId());
         return transactionDto;
     }
 

@@ -13,4 +13,6 @@ public interface AutomationService {
     AutomationDto edit(AutomationDto automationDto);
 
     void delete(Integer automationId);
+
+    void processAutomationsDaily();
 }

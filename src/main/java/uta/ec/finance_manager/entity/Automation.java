@@ -18,6 +18,7 @@ public class Automation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String name;
     private Double amount;
     @Enumerated(EnumType.STRING)
     private Frequency frequency;
@@ -34,6 +35,5 @@ public class Automation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
-
 
 }

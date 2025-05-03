@@ -188,4 +188,41 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="8" author="Freddy">
+        <addColumn tableName="automation">
+            <column name="name" type="VARCHAR(150)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="9" author="Freddy">
+
+        <createTable tableName="message">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="content" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="timestamp" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="INT"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="message"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_message_user"/>
+
+    </changeSet>
+
 </databaseChangeLog>

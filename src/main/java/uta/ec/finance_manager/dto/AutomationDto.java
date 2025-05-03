@@ -17,6 +17,9 @@ public class AutomationDto {
     @NotNull(message = "El monto es obligatorio")
     private Double amount;
 
+    @NotBlank(message = "El nombre es obligatorio")
+    private String name;
+
     @NotNull(message = "La frecuencia es obligatoria")
     private Frequency frequency;
 
