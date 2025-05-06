@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uta.ec.finance_manager.dto.BudgetDto;
 import uta.ec.finance_manager.entity.Budget;
+import uta.ec.finance_manager.entity.Transaction;
 import uta.ec.finance_manager.enums.BudgetPeriod;
 import uta.ec.finance_manager.repository.BudgetRepository;
 import uta.ec.finance_manager.repository.TransactionRepository;
 import uta.ec.finance_manager.repository.UserRepository;
 import uta.ec.finance_manager.service.BudgetService;
+import uta.ec.finance_manager.service.MessageService;
 import uta.ec.finance_manager.util.DateUtil;
 import uta.ec.finance_manager.util.UserUtil;
 
@@ -25,11 +27,37 @@ public class BudgetServiceImpl implements BudgetService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final TransactionRepository transactionRepository;
+    private final MessageService messageService;
     private final DateUtil dateUtil;
     private final UserUtil userUtil;
 
     @Override
     public BudgetDto save(BudgetDto budgetDto) {
+        budgetRepository.findByUserIdAndCategoryAndPeriod(userUtil.getUserId(), budgetDto.getCategory(), budgetDto.getPeriod())
+                .ifPresent(budget -> {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "El presupuesto ya existe");
+                });
+
+        Date start;
+        Date end;
+
+        if (budgetDto.getPeriod().equals(BudgetPeriod.SEMANAL)) {
+            start = dateUtil.getStartOfWeek();
+            end = dateUtil.getEndOfWeek();
+        } else if (budgetDto.getPeriod().equals(BudgetPeriod.MENSUAL)) {
+            start = dateUtil.getStartOfMonth();
+            end = dateUtil.getEndOfMonth();
+        } else {
+            start = dateUtil.getStartOfYear();
+            end = dateUtil.getEndOfYear();
+        }
+
+        budgetDto.setCurrentAmount(transactionRepository
+                .findAllByCategoryAndDateBetween(budgetDto.getCategory(), start, end).stream()
+                .mapToDouble(transaction -> transaction.getType().equals("Gasto") ? transaction.getAmount() : 0)
+                .sum()
+        );
+
         return budgetToDto(budgetRepository.save(dtoToBudget(budgetDto)));
     }
 

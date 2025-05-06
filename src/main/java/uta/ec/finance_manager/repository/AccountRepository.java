@@ -18,4 +18,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Optional<Account> findOneByIdAndUserId(Integer id, Integer userId);
 
     List<Account> findAllByNameContainsAndUserId(String name, Integer userId);
+
+    Optional<Account> findByNameAndUserId(String name, Integer userId);
 }
