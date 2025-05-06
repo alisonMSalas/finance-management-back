@@ -14,9 +14,7 @@ public class InvestmentController {
     private final InvestmentService investmentService;
 
     @PostMapping
-    public InvestmentDto save(InvestmentDto investmentDto){
-        System.out.println(investmentDto.getName());
-        System.out.println(investmentDto.getInitialAmount());
+    public InvestmentDto save(@RequestBody InvestmentDto investmentDto){
         return investmentService.save(investmentDto);
     }
 
@@ -26,12 +24,13 @@ public class InvestmentController {
     }
 
     @PutMapping
-    public InvestmentDto update(InvestmentDto investmentDto){
+    public InvestmentDto update(@RequestBody InvestmentDto investmentDto){
         return investmentService.update(investmentDto);
     }
 
-    @DeleteMapping
-    public void delete(Integer id) {
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable("id") Integer id) {
         investmentService.delete(id);
     }
+
 }
