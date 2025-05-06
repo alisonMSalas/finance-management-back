@@ -105,18 +105,17 @@ public class AutomationServiceImpl implements AutomationService {
 
         double amount = automation.getAmount();
 
-        // Validar saldo suficiente si es gasto
         if (amount < 0 && account.getBalance() + amount < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Insufficient balance for automation ID " + automation.getId() +
                             ". Required: " + Math.abs(amount) + ", Available: " + account.getBalance());
         }
 
-        // Crear DTO de transacción a partir de la automatización
         TransactionDto transactionDto = new TransactionDto();
         transactionDto.setAmount(Math.abs(amount));
         transactionDto.setAccountId(account.getId());
         transactionDto.setCategory(automation.getCategory());
+        transactionDto.setDate(new Date());
         transactionDto.setDescription("Automatización ejecutada de: " + automation.getName());
         transactionDto.setType(amount > 0 ? "Ingreso" : "Gasto");
         transactionDto.setUserId(automation.getUser().getId());
@@ -127,16 +126,12 @@ public class AutomationServiceImpl implements AutomationService {
         automationRepository.save(automation);
     }
 
-
-
-
     @Scheduled(cron = "0 0 0 * * ?")
     public void processAutomationsDaily() {
         LocalDate today = LocalDate.now();
         List<Automation> automations = automationRepository.findByStartDateBeforeWithAccount(
                 Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant())
         );
-
 
         for (Automation automation : automations) {
 
@@ -151,37 +146,34 @@ public class AutomationServiceImpl implements AutomationService {
         }
     }
 
-
     private boolean shouldExecuteAutomation(Automation automation) {
         Frequency frequency = automation.getFrequency();
-        Date lastExecution = automation.getLastExecutionDate() != null
-                ? automation.getLastExecutionDate()
-                : automation.getStartDate();
+        Date lastExecution = automation.getLastExecutionDate();
+
+        LocalDate today = LocalDate.now();
 
         if (lastExecution == null) {
-            return frequency == Frequency.DAILY || frequency == Frequency.MONTHLY;
+            return true;
         }
 
         LocalDate lastExecutionDate = lastExecution.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
-        LocalDate today = LocalDate.now();
 
         switch (frequency) {
             case DAILY:
                 return true;
             case WEEKLY:
-                return lastExecutionDate.plusWeeks(1).isEqual(today) ||
-                        lastExecutionDate.plusWeeks(1).isBefore(today);
+                return lastExecutionDate.plusWeeks(1).isEqual(today)
+                        || lastExecutionDate.plusWeeks(1).isBefore(today);
             case MONTHLY:
-                // Ejecutar si la fecha de inicio es hoy o si no ha habido ejecución previa
-                return lastExecutionDate.getMonth() != today.getMonth() ||
-                        lastExecutionDate.getYear() != today.getYear() ||
-                        automation.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(today);
+                return lastExecutionDate.getMonth() != today.getMonth()
+                        || lastExecutionDate.getYear() != today.getYear();
             default:
                 return false;
         }
     }
+
 
 
 
