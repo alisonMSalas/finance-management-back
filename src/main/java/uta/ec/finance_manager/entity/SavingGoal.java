@@ -24,6 +24,8 @@ public class SavingGoal {
     private Date deadline;
     private Date lastDepositDate;
     private Date creationDate;
+
+    @Enumerated(EnumType.STRING)
     private GoalStatus goalStatus;
 
     @Enumerated(EnumType.STRING)

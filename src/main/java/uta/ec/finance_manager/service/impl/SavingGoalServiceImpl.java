@@ -16,6 +16,7 @@ import uta.ec.finance_manager.repository.SavingGoalRepository;
 import uta.ec.finance_manager.service.SavingGoalService;
 import uta.ec.finance_manager.util.UserUtil;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -79,9 +80,55 @@ public class SavingGoalServiceImpl implements SavingGoalService {
             SavingGoal existingGoal = existingGoalOptional.get();
             modelMapper.map(savingGoalDto, existingGoal);
 
+            // Actualizar el balance
+            if (savingGoalDto.getCurrentBalance() != null) {
+                existingGoal.setCurrentBalance(savingGoalDto.getCurrentBalance());
+            }
+
+            // Actualizar la fecha del último depósito y la racha
+            if (savingGoalDto.getLastDepositDate() != null) {
+                existingGoal.setLastDepositDate(savingGoalDto.getLastDepositDate());
+
+                // Verificar si el depósito está dentro del período de frecuencia
+                Date lastDepositDate = existingGoal.getLastDepositDate();
+                DepositFrequency depositFrequency = existingGoal.getDepositFrequency();
+                long daysDifference = lastDepositDate != null && existingGoal.getLastDepositDate() != null
+                        ? ChronoUnit.DAYS.between(existingGoal.getLastDepositDate().toInstant(), new Date().toInstant())
+                        : -1;
+
+                boolean depositOnTime = false;
+                if (lastDepositDate == null) {
+                    // Primer depósito, iniciar racha
+                    depositOnTime = true;
+                } else {
+                    switch (depositFrequency) {
+                        case DAILY:
+                            depositOnTime = daysDifference <= 1;
+                            break;
+                        case WEEKLY:
+                            depositOnTime = daysDifference <= 7;
+                            break;
+                        case MONTHLY:
+                            depositOnTime = daysDifference <= 30;
+                            break;
+                        default:
+                            depositOnTime = false;
+                    }
+                }
+
+                // Actualizar la racha
+                if (depositOnTime) {
+                    existingGoal.setCurrentStreak(existingGoal.getCurrentStreak() + 1);
+                } else {
+                    existingGoal.setCurrentStreak(1); // Reiniciar racha si no se depositó a tiempo
+                }
+            }
+
+            // Verificar si la meta se ha completado
             if (existingGoal.getCurrentBalance() >= existingGoal.getTargetAmount()) {
                 existingGoal.setGoalStatus(GoalStatus.COMPLETED);
             } else if (existingGoal.getDeadline().before(new Date())) {
+                // Si la fecha límite ha pasado y no se ha cumplido, se marca como EXPIRED
                 existingGoal.setGoalStatus(GoalStatus.EXPIRED);
             }
 
@@ -113,66 +160,52 @@ public class SavingGoalServiceImpl implements SavingGoalService {
         }
         return savingGoalDto;
     }
+
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "30 45 * * * *")
     public void updateStreaks() {
+        System.out.println("Ejecutando");
         List<SavingGoal> savingGoals = savingGoalRepository.findByGoalStatus(GoalStatus.ACTIVE);
 
         for (SavingGoal goal : savingGoals) {
             if (goal.getDeadline() != null && goal.getDepositFrequency() != null) {
-                boolean goalCompleted = checkGoalCompletion(goal);
-                boolean depositOnTime = checkDepositFrequency(goal);
+                Date lastDepositDate = goal.getLastDepositDate();
+                DepositFrequency depositFrequency = goal.getDepositFrequency();
 
-                // Si la meta se ha completado y el depósito fue a tiempo, se incrementa la racha
-                if (goalCompleted) {
-                    if (depositOnTime) {
-                        goal.setCurrentStreak(goal.getCurrentStreak() + 1);
-                    } else {
-                        goal.setCurrentStreak(0); // Se reinicia la racha si el depósito no fue a tiempo
-                    }
-
-                    // Si se ha alcanzado el objetivo, se marca como COMPLETED
-                    if (goal.getCurrentBalance() >= goal.getTargetAmount()) {
-                        goal.setGoalStatus(GoalStatus.COMPLETED);
-                    }
-                } else if (goal.getDeadline().before(new Date())) {
-                    // Si la fecha límite ha pasado y no se ha cumplido, se marca como EXPIRED
-                    goal.setGoalStatus(GoalStatus.EXPIRED);
+                // Si no hay depósito previo, reiniciar racha si ha pasado el período
+                if (lastDepositDate == null) {
+                    goal.setCurrentStreak(0);
                 } else {
-                    goal.setCurrentStreak(0); // Si no se ha cumplido, se reinicia la racha
+                    long daysDifference = ChronoUnit.DAYS.between(lastDepositDate.toInstant(), new Date().toInstant());
+                    boolean overdue = false;
+
+                    switch (depositFrequency) {
+                        case DAILY:
+                            overdue = daysDifference > 1;
+                            break;
+                        case WEEKLY:
+                            overdue = daysDifference > 7;
+                            break;
+                        case MONTHLY:
+                            overdue = daysDifference > 30;
+                            break;
+                        default:
+                            overdue = true;
+                    }
+
+                    // Reiniciar racha si el depósito está atrasado
+                    if (overdue) {
+                        goal.setCurrentStreak(0);
+                    }
+                }
+
+                // Verificar si la meta ha expirado
+                if (goal.getDeadline().before(new Date())) {
+                    goal.setGoalStatus(GoalStatus.EXPIRED);
                 }
 
                 savingGoalRepository.save(goal); // Guardar la meta actualizada
             }
-        }
-    }
-
-    private boolean checkGoalCompletion(SavingGoal goal) {
-        boolean completedOnTime = goal.getCurrentBalance() >= goal.getTargetAmount();
-        boolean deadlineNotPassed = goal.getDeadline().after(new Date());
-        return completedOnTime && deadlineNotPassed; // Verifica si el saldo es suficiente y la fecha límite no ha pasado
-    }
-
-    private boolean checkDepositFrequency(SavingGoal goal) {
-        Date lastDepositDate = goal.getLastDepositDate();
-        DepositFrequency depositFrequency = goal.getDepositFrequency();
-
-        if (lastDepositDate == null) {
-            return false; // Si no hay depósitos previos, se considera que no ha cumplido
-        }
-
-        long timeDifference = new Date().getTime() - lastDepositDate.getTime();
-        long daysDifference = timeDifference / (1000 * 60 * 60 * 24);
-
-        switch (depositFrequency) {
-            case DAILY:
-                return daysDifference >= 1; // Se verifica que hayan pasado al menos 1 día
-            case WEEKLY:
-                return daysDifference >= 7; // Se verifica que hayan pasado al menos 7 días
-            case MONTHLY:
-                return daysDifference >= 30; // Se verifica que hayan pasado al menos 30 días
-            default:
-                return false; // Si no hay frecuencia válida, no se cumple
         }
     }
 }
