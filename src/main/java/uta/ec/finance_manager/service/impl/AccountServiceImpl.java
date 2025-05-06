@@ -18,7 +18,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
-
     private final AccountRepository accountRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
@@ -26,8 +25,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto save(AccountDto accountDto) {
-        Integer userId = userUtil.getUserId();
-        accountDto.setUserId(userId);
+        accountRepository.findByNameAndUserId(accountDto.getName(), userUtil.getUserId()).ifPresent(
+                a -> {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe una cuenta con nombre " + accountDto.getName());
+                }
+        );
+
+        accountDto.setUserId(userUtil.getUserId());
         return accountToDto(accountRepository.save(dtoToAccount(accountDto)));
     }
 
@@ -55,10 +59,17 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void delete(Integer accountId) {
-        Integer userId = userUtil.getUserId();
-
-        Account account = accountRepository.findOneByIdAndUserId(accountId, userId).orElseThrow(() ->
+        Account account = accountRepository.findOneByIdAndUserId(accountId, userUtil.getUserId()).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la cuenta"));
+
+        if (!account.getTransactions().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "No se puede eliminar la cuenta, tiene transacciones relacionadas");
+        }
+
+        if (!account.getAutomations().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "No se puede eliminar la cuenta, tiene automatizaciones relacionadas");
+        }
+
         accountRepository.delete(account);
     }
 

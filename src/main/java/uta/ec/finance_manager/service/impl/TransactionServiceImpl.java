@@ -73,7 +73,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionDto> getAllByUser() {
-        List<Transaction> transactions = transactionRepository.findAllByUserId(userUtil.getUserId(), Sort.by("id"));
+        List<Transaction> transactions = transactionRepository.findAllByUserId(userUtil.getUserId(),
+                Sort.by("date").descending());
         return transactions.stream().map(this::transactionToDto).toList();
     }
 
