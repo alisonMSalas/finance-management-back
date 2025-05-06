@@ -38,4 +38,9 @@ public class SavingGoalController
     public List<SavingGoalDto> getByUser() {
         return savingGoalService.getByUser();
     }
+
+    @PostMapping("/manual-streak")
+    public void updateStreaks() {
+        savingGoalService.updateStreaks();
+    }
 }
