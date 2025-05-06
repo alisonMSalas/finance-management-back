@@ -13,6 +13,7 @@ import uta.ec.finance_manager.repository.UserRepository;
 import uta.ec.finance_manager.service.InvestmentService;
 import uta.ec.finance_manager.util.UserUtil;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -63,8 +64,25 @@ public class InvestmentServiceImpl implements InvestmentService {
     private InvestmentDto investmentToDto(Investment investment){
         InvestmentDto investmentDto = modelMapper.map(investment, InvestmentDto.class);
         investmentDto.setUserId(investment.getUser().getId());
+
+        Date now = new Date();
+        Date start = investment.getStartDate();
+        Date end = investment.getEndDate();
+
+        if (now.before(start)) {
+            investmentDto.setProgress(0);
+        } else if (now.after(end)) {
+            investmentDto.setProgress(100);
+        } else {
+            long totalDuration = end.getTime() - start.getTime();
+            long elapsed = now.getTime() - start.getTime();
+            int progress = (int) ((elapsed * 100.0) / totalDuration);
+            investmentDto.setProgress(progress);
+        }
+
         return investmentDto;
     }
+
 
     private Investment dtoToInvestment(InvestmentDto investmentDto){
         Investment investment = modelMapper.map(investmentDto, Investment.class);
