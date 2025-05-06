@@ -17,7 +17,10 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Double maxAmount;
+
+    @Enumerated(EnumType.STRING)
     private BudgetPeriod period;
+
     private Double currentAmount;
 
     @Enumerated(EnumType.STRING)

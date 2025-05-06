@@ -8,20 +8,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uta.ec.finance_manager.dto.TransactionDto;
+import uta.ec.finance_manager.entity.Account;
+import uta.ec.finance_manager.entity.Budget;
+import uta.ec.finance_manager.entity.Message;
 import uta.ec.finance_manager.entity.Transaction;
 import uta.ec.finance_manager.repository.AccountRepository;
+import uta.ec.finance_manager.repository.BudgetRepository;
 import uta.ec.finance_manager.repository.TransactionRepository;
 import uta.ec.finance_manager.repository.UserRepository;
+import uta.ec.finance_manager.service.BudgetService;
+import uta.ec.finance_manager.service.MessageService;
 import uta.ec.finance_manager.service.TransactionService;
 import uta.ec.finance_manager.util.UserUtil;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
+    private final BudgetRepository budgetRepository;
     private final AccountRepository accountRepository;
+    private final MessageService messageService;
     private final ModelMapper modelMapper;
     private final UserUtil userUtil;
     private final UserRepository userRepository;
@@ -30,10 +39,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto save(TransactionDto dto) {
         Integer userId;
-        if (dto.getUserId() != null){
-            userId= dto.getUserId();
-        }else{
-            userId= userUtil.getUserId();
+        if (dto.getUserId() != null) {
+            userId = dto.getUserId();
+        } else {
+            userId = userUtil.getUserId();
         }
 
         return save(dto, userId);
@@ -58,6 +67,8 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         transaction.getAccount().setBalance(currentBalance);
+
+        sendNotification(transaction);
         return transactionToDto(transactionRepository.save(transaction));
     }
 
@@ -94,4 +105,35 @@ public class TransactionServiceImpl implements TransactionService {
         return transaction;
     }
 
+    private void sendNotification(Transaction transaction) {
+        List<Budget> budgets = budgetRepository.findByUserIdAndCategory(
+                userUtil.getUserId(), transaction.getCategory());
+
+        budgets.forEach(budget -> {
+            // Obtener el monto actual y calcular el nuevo monto
+            double anterior = budget.getCurrentAmount();
+            double actual = anterior + transaction.getAmount();
+            budget.setCurrentAmount(actual);
+            budgetRepository.save(budget);
+
+            // Calcular ratios
+            double max = budget.getMaxAmount();
+            double ratioAntes = max > 0 ? anterior / max : 0;
+            double ratioAhora = max > 0 ? actual / max : 0;
+            Integer userId = budget.getUser().getId();
+
+            // Notificación al alcanzar el 75% del presupuesto
+            if (ratioAntes < 0.75 && ratioAhora >= 0.75 && ratioAhora <= 1.0) {
+                String contenido = "Has alcanzado el 75% del presupuesto para " + budget.getCategory();
+                messageService.create("WARNING", contenido, userId);
+                return;
+            }
+
+            // Notificación al exceder el presupuesto
+            if (max <= actual) {
+                String contenido = "Has excedido el presupuesto para " + budget.getCategory();
+                messageService.create("ERROR", contenido, userId);
+            }
+        });
+    }
 }
