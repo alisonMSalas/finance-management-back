@@ -10,6 +10,18 @@ import org.springframework.web.server.ResponseStatusException;
 import uta.ec.finance_manager.entity.User;
 import uta.ec.finance_manager.repository.UserRepository;
 
+/**
+ * Utilidad para obtener información del usuario autenticado.
+ * <p>
+ * Esta clase proporciona métodos para extraer información del usuario
+ * que está actualmente autenticado en el sistema mediante el contexto
+ * de seguridad de Spring Security.
+ * </p>
+ * 
+ * @author Finance Manager Team
+ * @version 1.0
+ * @since 2024
+ */
 @Service
 @RequiredArgsConstructor
 public class UserUtil {
@@ -17,6 +29,16 @@ public class UserUtil {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
+    /**
+     * Obtiene el identificador del usuario actualmente autenticado.
+     * <p>
+     * Extrae el email del usuario del contexto de seguridad de Spring,
+     * busca el usuario en la base de datos y retorna su identificador.
+     * </p>
+     * 
+     * @return identificador del usuario autenticado
+     * @throws ResponseStatusException si no hay autenticación o el usuario no existe
+     */
     public Integer getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
