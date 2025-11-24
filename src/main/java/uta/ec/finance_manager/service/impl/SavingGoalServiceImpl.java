@@ -78,13 +78,16 @@ public class SavingGoalServiceImpl implements SavingGoalService {
         Optional<SavingGoal> opt = savingGoalRepository.findById(savingGoalDto.getId());
         if (opt.isPresent()) {
             SavingGoal goal = opt.get();
+            Date date = goal.getLastDepositDate();
             modelMapper.map(savingGoalDto, goal);
+
+            goal.setLastDepositDate(date);
 
             if (savingGoalDto.getCurrentBalance() != null) {
                 goal.setCurrentBalance(savingGoalDto.getCurrentBalance());
             }
 
-            if (savingGoalDto.getLastDepositDate() != null) {
+            if (goal.getLastDepositDate() != null) {
                 Date previous = goal.getLastDepositDate();
                 Date current  = savingGoalDto.getLastDepositDate();
                 goal.setLastDepositDate(current);
@@ -118,6 +121,8 @@ public class SavingGoalServiceImpl implements SavingGoalService {
                         goal.setCurrentStreak(1);
                     }
                 }
+            } else {
+                goal.setCurrentStreak(1);
             }
 
             if (goal.getCurrentBalance() >= goal.getTargetAmount()) {
@@ -126,6 +131,7 @@ public class SavingGoalServiceImpl implements SavingGoalService {
                 goal.setGoalStatus(GoalStatus.EXPIRED);
             }
 
+            goal.setLastDepositDate(new Date());
             SavingGoal updated = savingGoalRepository.save(goal);
             return savingToDto(updated);
         }
