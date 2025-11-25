@@ -1,0 +1,56 @@
+# Doxyfile for Finance Manager Application
+
+# Project configuration
+PROJECT_NAME           = "Finance Manager"
+PROJECT_NUMBER         = 1.0
+PROJECT_BRIEF          = "Sistema de gestión financiera personal con Spring Boot"
+OUTPUT_DIRECTORY       = docs
+CREATE_SUBDIRS         = NO
+
+# Input configuration
+INPUT                  = src/main/java
+FILE_PATTERNS          = *.java
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */test/*
+
+# Output formats
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HTML_OUTPUT            = html
+
+# Extraction settings
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+
+# Java-specific settings
+OPTIMIZE_OUTPUT_JAVA   = YES
+JAVADOC_AUTOBRIEF      = YES
+
+# Source code configuration
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# Diagram configuration
+HAVE_DOT               = NO
+CLASS_DIAGRAMS         = YES
+UML_LOOK               = YES
+
+# Other options
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+
+# HTML output customization
+HTML_TIMESTAMP         = YES
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+
+# Search engine
+SEARCHENGINE           = YES
